@@ -22,6 +22,8 @@
         <module>comment-service</module>
         <module>tag-service</module>
         <module>posttag-service</module>
+        <module>discovery-server</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>
@@ -29,6 +31,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring-cloud.version>2022.0.2</spring-cloud.version>
         <testcontainers.version>1.18.0</testcontainers.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -49,8 +52,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
         </dependencies>
+
+
     </dependencyManagement>
+
+
 
     <build>
         <plugins>
