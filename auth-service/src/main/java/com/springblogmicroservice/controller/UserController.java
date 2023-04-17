@@ -50,6 +50,7 @@ public class UserController {
         return ResponseEntity.ok(jwtUtils.isTokenValid(checkAuthRequest.getToken(),checkAuthRequest.getEmail()));
     }
 
+    //TODO hit from gateway when refresh token expired
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
        return ResponseEntity.ok(userService.getTokenRefreshResponse(request));
