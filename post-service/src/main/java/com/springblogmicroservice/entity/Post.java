@@ -53,7 +53,6 @@ public class Post {
     @NotNull
     private double popular = 0.0;
 
-    @NotNull
     private Long userId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)

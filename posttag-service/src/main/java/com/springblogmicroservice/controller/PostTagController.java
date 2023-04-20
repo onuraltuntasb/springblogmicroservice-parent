@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/post-tag")
 @RequiredArgsConstructor
@@ -12,17 +15,25 @@ public class PostTagController {
 
     PostTagRepository postTagRepository;
 
-    @PostMapping("/save")
-    public ResponseEntity<?> savePost(@RequestParam(value = "post-id")Long postId,
-                                      @RequestParam(value = "tag-id")Long tagId){
+    @GetMapping("/save")
+    public ResponseEntity<Boolean> savePost(HashMap<Long,Long> map){
 
-        if(postId == null || tagId ==null){
-            return ResponseEntity.badRequest().body("Bad request!");
+        //TODO move to service later
+
+        if(map == null){
+            return ResponseEntity.badRequest().body(false);
         }
 
-        postTagRepository.savePostTag(postId,tagId);
+        for (Map.Entry<Long, Long> set :
+                map.entrySet()) {
 
-        return ResponseEntity.ok().body("success");
+            postTagRepository.savePostTag(set.getKey(),set.getValue());
+
+            System.out.println(set.getKey() + " = "
+                    + set.getValue());
+        }
+
+        return ResponseEntity.ok().body(true);
     }
 
 

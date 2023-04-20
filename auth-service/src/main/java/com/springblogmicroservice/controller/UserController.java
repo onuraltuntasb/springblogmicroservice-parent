@@ -5,6 +5,8 @@ package com.springblogmicroservice.controller;
 import com.springblogmicroservice.dto.payload.CheckAuthRequest;
 import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
 import com.springblogmicroservice.entity.User;
+import com.springblogmicroservice.exception.ResourceNotFoundException;
+import com.springblogmicroservice.repository.UserRepository;
 import com.springblogmicroservice.security.JwtUtils;
 import com.springblogmicroservice.service.UserService;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
@@ -56,6 +59,16 @@ public class UserController {
        return ResponseEntity.ok(userService.getTokenRefreshResponse(request));
     }
 
-
+    @PostMapping("/getuserid")
+    public ResponseEntity<?> getUserId(@Valid @RequestBody CheckAuthRequest checkAuthRequest){
+        String email = "";
+        if(checkAuthRequest.getToken() !=null){
+            email  =  jwtUtils.extractUsername(checkAuthRequest.getToken());
+            Long userId = userRepository.findUserByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Not found user!")).getId();
+            return ResponseEntity.ok(userId);
+        }else{
+            return ResponseEntity.ok("Bad Request!");
+        }
+    }
 }
 

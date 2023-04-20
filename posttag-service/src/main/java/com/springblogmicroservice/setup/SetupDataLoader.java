@@ -1,26 +1,25 @@
 package com.springblogmicroservice.setup;
 
-
-import com.springblogmicroservice.entity.Privilege;
-import com.springblogmicroservice.entity.Role;
 import com.springblogmicroservice.repository.PostTagRepository;
-import com.springblogmicroservice.repository.PrivilegeRepository;
-import com.springblogmicroservice.repository.RoleRepository;
+
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
+@ComponentScan({"com.springblogmicroservice"})
 @RequiredArgsConstructor
 public class SetupDataLoader implements
         ApplicationListener<ContextRefreshedEvent> {
 
-    PostTagRepository postTagRepository;
+    private final PostTagRepository postTagRepository;
 
     boolean alreadySetup = false;
-    //TODO learn how to active hear on ci/cd
 
     @Override
     @Transactional
@@ -28,7 +27,8 @@ public class SetupDataLoader implements
 
         if (alreadySetup)
             return;
-        postTagRepository.checkTable();
+
+        //postTagRepository.checkTable();
 
         alreadySetup = true;
     }

@@ -5,9 +5,9 @@ eureka:
 
 spring:
   application:
-    name: post-service
+    name: posttag-service
   datasource:
-    url:  jdbc:mysql://localhost:3311/spring_tag
+    url:  jdbc:mysql://localhost:3311/spring_posttag
     username: root
     password: root
   jpa:

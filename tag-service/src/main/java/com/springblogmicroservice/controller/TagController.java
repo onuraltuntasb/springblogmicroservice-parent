@@ -29,10 +29,16 @@ public class TagController {
     }
 
     @PostMapping("/check-tags")
-    public ResponseEntity<?> saveTag(@Valid @RequestBody PostListIdRequest postListIdRequest){
+    public ResponseEntity<?> checkTags(@Valid @RequestBody PostListIdRequest postListIdRequest){
 
-        if(postListIdRequest == null || postListIdRequest.getTags().size() ==0){
-            return ResponseEntity.badRequest().body("Bad request!");
+
+        for (PostIdRequest el :postListIdRequest.getTags()) {
+            System.out.println("bakhele : " + el.getId());
+        }
+
+
+        if(postListIdRequest.getTags().size() == 0){
+            return ResponseEntity.badRequest().body(false);
         }
 
         return ResponseEntity.ok().body(tagService.checkTags(postListIdRequest));
