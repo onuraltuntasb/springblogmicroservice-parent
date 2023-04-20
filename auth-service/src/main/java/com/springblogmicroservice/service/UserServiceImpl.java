@@ -2,7 +2,7 @@ package com.springblogmicroservice.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springblogmicroservice.dto.payload.request.TokenRefreshRequest;
+import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
 import com.springblogmicroservice.dto.payload.response.TokenRefreshResponse;
 import com.springblogmicroservice.dto.payload.response.UserAuthResponse;
 import com.springblogmicroservice.entity.RefreshToken;
@@ -15,7 +15,6 @@ import com.springblogmicroservice.repository.UserRepository;
 import com.springblogmicroservice.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.el.stream.Optional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

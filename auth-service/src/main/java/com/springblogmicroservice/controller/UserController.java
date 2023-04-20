@@ -2,8 +2,8 @@ package com.springblogmicroservice.controller;
 
 
 
-import com.springblogmicroservice.dto.payload.request.CheckAuthRequest;
-import com.springblogmicroservice.dto.payload.request.TokenRefreshRequest;
+import com.springblogmicroservice.dto.payload.CheckAuthRequest;
+import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
 import com.springblogmicroservice.entity.User;
 import com.springblogmicroservice.security.JwtUtils;
 import com.springblogmicroservice.service.UserService;

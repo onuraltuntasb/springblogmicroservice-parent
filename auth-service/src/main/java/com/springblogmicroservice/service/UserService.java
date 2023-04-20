@@ -1,11 +1,10 @@
 package com.springblogmicroservice.service;
 
 
-import com.springblogmicroservice.dto.payload.request.TokenRefreshRequest;
+import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
 import com.springblogmicroservice.dto.payload.response.TokenRefreshResponse;
 import com.springblogmicroservice.dto.payload.response.UserAuthResponse;
 import com.springblogmicroservice.entity.User;
-import org.apache.el.stream.Optional;
 
 public interface UserService {
     User registerUser(User user);

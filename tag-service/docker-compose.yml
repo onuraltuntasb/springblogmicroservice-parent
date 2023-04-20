@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  mysqldb:
+    image: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: spring_tag
+    expose:
+      - "3310"
+    ports:
+      - "3310:3306"

@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class PostServiceApplication {
+public class TagServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(PostServiceApplication.class, args);
+        SpringApplication.run(TagServiceApplication.class, args);
     }
 
     @Bean
