@@ -59,11 +59,12 @@ public class UserController {
        return ResponseEntity.ok(userService.getTokenRefreshResponse(request));
     }
 
-    @PostMapping("/getuserid")
-    public ResponseEntity<?> getUserId(@Valid @RequestBody CheckAuthRequest checkAuthRequest){
+    @GetMapping("/getuserid")
+    public ResponseEntity<?> getUserId(@RequestHeader (name="Authorization") String token){
         String email = "";
-        if(checkAuthRequest.getToken() !=null){
-            email  =  jwtUtils.extractUsername(checkAuthRequest.getToken());
+        System.out.println("token : "+ token);
+        if(token !=null){
+            email  =  jwtUtils.extractUsername(token.substring(7));
             Long userId = userRepository.findUserByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Not found user!")).getId();
             return ResponseEntity.ok(userId);
         }else{

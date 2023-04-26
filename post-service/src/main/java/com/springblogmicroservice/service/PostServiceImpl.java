@@ -1,10 +1,10 @@
 package com.springblogmicroservice.service;
 
-
 import com.springblogmicroservice.dto.PostListIdRequest;
 import com.springblogmicroservice.dto.PostRequest;
 import com.springblogmicroservice.entity.Post;
 import com.springblogmicroservice.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,10 +26,11 @@ public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
 
 
+    @Transactional
     @Override
-    public Post savePost(PostRequest postRequest, Long userId) {
+    public Post savePost(PostRequest postRequest,String token) {
 
-        //TODO wc post call tagIs is ok if its ok then wc post call write post-tag ids if its ok then write post with user-id
+        //TODO transactional seems working ok
 
         List<PostListIdRequest> requestPostIds = postRequest.getTags();
         HashMap<Long,Long> map1 = new HashMap<>();
@@ -54,32 +55,49 @@ public class PostServiceImpl implements PostService{
             map1.put(savedPostId, el.getId());
         }
 
-
-        Boolean res1 = webClient.post()
-                .uri("http://localhost:8084/api/tag/check-tags")
-                .body(Mono.just(requestPostIds),PostListIdRequest.class)
-                .retrieve()
-                .bodyToMono(Boolean.class).block();
+        Boolean res1;
         Boolean res2 = false;
-
-        if(Boolean.TRUE.equals(res1)){
-             res2 = webClient.post()
-                    .uri("http://localhost:8085/api/post-tag/save")
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .body(Mono.just(map1),HashMap.class)
+        try {
+             res1 = webClient.post()
+                    .uri("http://localhost:8084/api/tag/check-tags")
+                    .body(Mono.just(requestPostIds),PostListIdRequest.class)
                     .retrieve()
                     .bodyToMono(Boolean.class).block();
+
+        }catch (Exception e){
+            throw new RuntimeException("Some error occurred when calling posttag service!");
         }
 
-        if(Boolean.TRUE.equals(res2)){
-            Long res3 = webClient.get()
-                    .uri("http://localhost:8082/auth/getuserid")
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .retrieve()
-                    .bodyToMono(Long.class).block();
+        System.out.println("res1 is :"+res1);
 
-            post.setUserId(res3);
-            postRepository.saveAndFlush(post) ;
+        if(Boolean.TRUE.equals(res1)){
+            try {
+                res2 = webClient.post()
+                        .uri("http://localhost:8085/api/post-tag/save")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .body(Mono.just(map1),HashMap.class)
+                        .retrieve()
+                        .bodyToMono(Boolean.class).block();
+            }catch (Exception e){
+                throw new RuntimeException("Some error occurred when calling posttag service!");
+            }
+        }
+
+        System.out.println("res2 is :"+res2);
+
+        if(Boolean.TRUE.equals(res2)){
+            try {
+                Long res3 = webClient.get()
+                        .uri("http://localhost:8082/api/auth/getuserid")
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .retrieve()
+                        .bodyToMono(Long.class).block();
+
+                post.setUserId(res3);
+                postRepository.saveAndFlush(post) ;
+            }catch (Exception e){
+                throw new RuntimeException("Some error occurred when getting user id from auth server!");
+            }
         }
 
         return post;

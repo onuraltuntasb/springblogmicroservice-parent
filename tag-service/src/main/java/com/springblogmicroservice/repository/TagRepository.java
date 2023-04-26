@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag,Long> {
-    Tag findTagByName(String name);
 
     @Query(value = "SELECT id FROM tag",nativeQuery = true)
     List<Long> getAllIdsFromTable();

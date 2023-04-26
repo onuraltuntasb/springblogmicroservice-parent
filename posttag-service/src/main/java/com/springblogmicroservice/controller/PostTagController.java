@@ -13,10 +13,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PostTagController {
 
-    PostTagRepository postTagRepository;
+    private final PostTagRepository postTagRepository;
 
-    @GetMapping("/save")
-    public ResponseEntity<Boolean> savePost(HashMap<Long,Long> map){
+    @PostMapping("/save")
+    public ResponseEntity<Boolean> savePost(@RequestBody HashMap<Long,Long> map){
 
         //TODO move to service later
 
@@ -24,19 +24,11 @@ public class PostTagController {
             return ResponseEntity.badRequest().body(false);
         }
 
-        for (Map.Entry<Long, Long> set :
-                map.entrySet()) {
-
+        for (Map.Entry<Long, Long> set : map.entrySet()) {
             postTagRepository.savePostTag(set.getKey(),set.getValue());
-
-            System.out.println(set.getKey() + " = "
-                    + set.getValue());
         }
 
         return ResponseEntity.ok().body(true);
     }
-
-
-
 
 }

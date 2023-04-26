@@ -19,13 +19,14 @@ public class PostController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/save")
-    public ResponseEntity<?> savePost(@Valid @RequestBody PostRequest postRequest, @RequestParam(value = "user-id")Long userId){
+    public ResponseEntity<?> savePost(@Valid @RequestBody PostRequest postRequest,
+                                      @RequestHeader (name="Authorization") String token){
 
-        if(userId == null){
+        if(postRequest == null){
             return ResponseEntity.badRequest().body("Bad request!");
         }
 
-        return ResponseEntity.ok().body(postService.savePost(postRequest,userId));
+        return ResponseEntity.ok().body(postService.savePost(postRequest,token));
     }
 
 

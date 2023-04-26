@@ -1,6 +1,5 @@
 package com.springblogmicroservice.entity;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

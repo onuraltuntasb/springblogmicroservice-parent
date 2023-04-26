@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tag")
 @RequiredArgsConstructor
@@ -29,20 +31,13 @@ public class TagController {
     }
 
     @PostMapping("/check-tags")
-    public ResponseEntity<?> checkTags(@Valid @RequestBody PostListIdRequest postListIdRequest){
+    public ResponseEntity<?> checkTags(@RequestBody List<PostListIdRequest> requestPostIds){
 
-
-        for (PostIdRequest el :postListIdRequest.getTags()) {
-            System.out.println("bakhele : " + el.getId());
-        }
-
-
-        if(postListIdRequest.getTags().size() == 0){
+        if(requestPostIds.size() == 0){
             return ResponseEntity.badRequest().body(false);
         }
 
-        return ResponseEntity.ok().body(tagService.checkTags(postListIdRequest));
+        return ResponseEntity.ok().body(tagService.checkTags(requestPostIds));
     }
-
 
 }
