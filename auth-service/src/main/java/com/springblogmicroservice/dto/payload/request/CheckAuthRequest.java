@@ -1,4 +1,4 @@
-package com.springblogmicroservice.dto.payload;
+package com.springblogmicroservice.dto.payload.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

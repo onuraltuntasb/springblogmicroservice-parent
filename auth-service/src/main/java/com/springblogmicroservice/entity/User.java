@@ -67,6 +67,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "refresh_id", referencedColumnName = "id")
     private RefreshToken refreshToken;
 
+    @OneToOne
+    @JoinColumn(name = "notification_settings_id", referencedColumnName = "id")
+    private NotificationSettings notificationSettings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,8 +18,21 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: notificationTopic
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:com.springblogmicroservice.entity.Comment
 server:
   port: 8086
+
 
 
 logging:
@@ -32,4 +45,7 @@ logging:
               RouteDefinitionLocator: INFO
             nodeValue: TRACE
     root: INFO
+
+
+
 

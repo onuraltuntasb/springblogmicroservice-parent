@@ -2,19 +2,22 @@ package com.springblogmicroservice.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
+import com.springblogmicroservice.dto.payload.request.FollowPostRequest;
+import com.springblogmicroservice.dto.payload.request.TokenRefreshRequest;
 import com.springblogmicroservice.dto.payload.response.TokenRefreshResponse;
 import com.springblogmicroservice.dto.payload.response.UserAuthResponse;
+import com.springblogmicroservice.entity.FollowedPosts;
+import com.springblogmicroservice.entity.NotificationSettings;
 import com.springblogmicroservice.entity.RefreshToken;
 import com.springblogmicroservice.entity.User;
 import com.springblogmicroservice.exception.ResourceNotFoundException;
 import com.springblogmicroservice.exception.TokenRefreshException;
-import com.springblogmicroservice.repository.RefreshTokenRepository;
-import com.springblogmicroservice.repository.RoleRepository;
-import com.springblogmicroservice.repository.UserRepository;
+import com.springblogmicroservice.repository.*;
 import com.springblogmicroservice.security.JwtUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +34,8 @@ import java.util.Arrays;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final FollowPostRepository followPostRepository;
+    private final NotificationSettingsRepository notificationSettingsRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
@@ -40,6 +45,7 @@ public class UserServiceImpl implements UserService{
     private final ObjectMapper objectMapper;
 
 
+    @Transactional
     @Override
     public User registerUser(User user) {
 
@@ -60,6 +66,10 @@ public class UserServiceImpl implements UserService{
                 .createRefreshToken();
 
             user.setRefreshToken(refreshToken);
+
+           NotificationSettings notificationSettings = NotificationSettings.builder().commentReply(true).commentReply(true).build();
+           user.setNotificationSettings(notificationSettings);
+           notificationSettingsRepository.save(notificationSettings);
 
         return  userRepository.save(user);
     }
@@ -99,9 +109,6 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(()-> new ResourceNotFoundException(
                         "Not found email with id = " + user.getEmail()));
 
-
-
-
         try {
 
 
@@ -139,6 +146,32 @@ public class UserServiceImpl implements UserService{
              throw new TokenRefreshException(requestRefreshToken,
                     "Refresh token is not in database!");
         }
+    }
+
+    @Override
+    public FollowedPosts saveFollowPost(FollowedPosts followedPosts) {
+        return followPostRepository.save(followedPosts);
+    }
+
+    @Transactional
+    @Override
+    public NotificationSettings saveNotificationSettings(NotificationSettings notificationSettings,String token) {
+
+        String email = "";
+        System.out.println("token : "+ token);
+        if(token !=null){
+            email  =  jwtUtils.extractUsername(token.substring(7));
+            User user = userRepository.findUserByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Not found user!"));
+            notificationSettingsRepository.findById(1L)
+                    .orElseThrow(()-> new ResourceNotFoundException("Not found notification settings!"));
+
+            user.setNotificationSettings(notificationSettings);
+            userRepository.save(user);
+        }else{
+            throw new RuntimeException("token is coming null!");
+        }
+        notificationSettings.setId(1L);
+        return notificationSettingsRepository.save(notificationSettings);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.springblogmicroservice.controller;
 
 import com.springblogmicroservice.dto.PostRequest;
+import com.springblogmicroservice.entity.Post;
+import com.springblogmicroservice.exception.ResourceNotFoundException;
 import com.springblogmicroservice.repository.PostRepository;
 import com.springblogmicroservice.service.PostService;
 import jakarta.validation.Valid;
@@ -29,5 +31,21 @@ public class PostController {
         return ResponseEntity.ok().body(postService.savePost(postRequest,token));
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> savePost(@RequestParam(value = "post-id")Long postId){
+
+
+        if(postId == null ){
+            return ResponseEntity.badRequest().body(false);
+        }
+
+         Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("There is no post with this id : "+ postId));
+
+        if(post!=null){
+            return ResponseEntity.ok().body(true);
+        }else{
+            return ResponseEntity.ok().body(false);
+        }
+    }
 
 }

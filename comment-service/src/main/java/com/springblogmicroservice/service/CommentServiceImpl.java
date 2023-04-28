@@ -2,11 +2,13 @@ package com.springblogmicroservice.service;
 
 import com.springblogmicroservice.dto.payload.request.CommentRequest;
 import com.springblogmicroservice.entity.Comment;
+import com.springblogmicroservice.event.CommentNotificationEvent;
 import com.springblogmicroservice.exception.ResourceNotFoundException;
 import com.springblogmicroservice.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -19,11 +21,12 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final WebClient webClient;
+    private final KafkaTemplate<String, Comment> kafkaTemplate;
 
 
     @Transactional
     @Override
-    public Comment saveComment(CommentRequest commentRequest,String token, Long PostId, Long commentId) {
+    public Comment saveComment(CommentRequest commentRequest,String token, Long postId, Long commentId) {
 
 
         //TODO get user id from auth-service
@@ -33,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
 
         try {
             userId = webClient.get()
-                    .uri("http://localhost:8082/api/auth/getuserid")
+                    .uri("http://localhost:8082/api/getuserid")
                     .header(HttpHeaders.AUTHORIZATION, token)
                     .retrieve()
                     .bodyToMono(Long.class).block();
@@ -50,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
                         .get()
                         .uri(uriBuilder -> uriBuilder
                                 .path("/api/post/check")
-                                .queryParam("post-id",PostId)
+                                .queryParam("post-id",postId)
                                 .build())
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .retrieve()
@@ -68,6 +71,8 @@ public class CommentServiceImpl implements CommentService {
                     .lastUpdateDate(date)
                     .dislikeCount(0)
                     .likeCount(0)
+                    .userId(userId)
+                    .postId(postId)
                     .build();
 
             Comment comment = null;
@@ -77,17 +82,20 @@ public class CommentServiceImpl implements CommentService {
                 comment = commentRepository.findById(commentId).orElseThrow(
                         ()->new ResourceNotFoundException("Comment not found with this id : "+ userId)
                 );
-                comment.setCommentId(commentId);
-                comment.setPostId(PostId);
+                rComment.setCommentId(commentId);
+                comment.setPostId(postId);
                 comment.setUserId(userId);
+
             }else{
                 rComment.setCommentId(0);
-                rComment.setPostId(PostId);
+                rComment.setPostId(postId);
                 rComment.setUserId(userId);
 
-                return commentRepository.save(rComment);
             }
 
+            rComment = commentRepository.saveAndFlush(rComment);
+            kafkaTemplate.send("notificationTopic",rComment);
+            return rComment;
 
         }
         return null;

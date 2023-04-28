@@ -2,8 +2,8 @@ package com.springblogmicroservice.controller;
 
 
 
-import com.springblogmicroservice.dto.payload.CheckAuthRequest;
-import com.springblogmicroservice.dto.payload.TokenRefreshRequest;
+import com.springblogmicroservice.dto.payload.request.CheckAuthRequest;
+import com.springblogmicroservice.dto.payload.request.TokenRefreshRequest;
 import com.springblogmicroservice.entity.User;
 import com.springblogmicroservice.exception.ResourceNotFoundException;
 import com.springblogmicroservice.repository.UserRepository;
@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Validated
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user){
 
 
@@ -38,7 +38,7 @@ public class UserController {
                 )
         );
     }
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody User user){
 
         return ResponseEntity.ok(
@@ -48,16 +48,18 @@ public class UserController {
         );
     }
 
-    @PostMapping("/check")
+    @PostMapping("/auth/check")
     public ResponseEntity<Boolean> checkAuth(@Valid @RequestBody CheckAuthRequest checkAuthRequest){
         return ResponseEntity.ok(jwtUtils.isTokenValid(checkAuthRequest.getToken(),checkAuthRequest.getEmail()));
     }
 
     //TODO hit from gateway when refresh token expired
-    @PostMapping("/refreshtoken")
+    @PostMapping("/auth/refreshtoken")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
        return ResponseEntity.ok(userService.getTokenRefreshResponse(request));
     }
+
+
 
     @GetMapping("/getuserid")
     public ResponseEntity<?> getUserId(@RequestHeader (name="Authorization") String token){

@@ -1,4 +1,4 @@
-package com.springblogmicroservice.dto.payload;
+package com.springblogmicroservice.dto.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
