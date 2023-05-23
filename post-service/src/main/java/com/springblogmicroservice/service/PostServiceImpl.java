@@ -93,6 +93,7 @@ public class PostServiceImpl implements PostService{
                         .retrieve()
                         .bodyToMono(Long.class).block();
 
+                System.out.println("res3 is :"+res3);
                 post.setUserId(res3);
                 postRepository.saveAndFlush(post) ;
             }catch (Exception e){

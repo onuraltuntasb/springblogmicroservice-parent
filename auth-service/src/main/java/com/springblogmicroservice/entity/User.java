@@ -12,9 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -70,6 +68,11 @@ public class User implements UserDetails {
     @OneToOne
     @JoinColumn(name = "notification_settings_id", referencedColumnName = "id")
     private NotificationSettings notificationSettings;
+
+    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true)
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    private Set<FollowedPosts> followedPosts = new HashSet<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

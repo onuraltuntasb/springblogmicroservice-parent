@@ -149,8 +149,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public FollowedPosts saveFollowPost(FollowedPosts followedPosts) {
-        return followPostRepository.save(followedPosts);
+    public FollowedPosts saveFollowPost(Long postId,String token) {
+
+        String email = "";
+        System.out.println("token : "+ token);
+        User user = null;
+        FollowedPosts f = null;
+        if(token !=null){
+            email  =  jwtUtils.extractUsername(token.substring(7));
+            user = userRepository.findUserByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Not found user!"));
+            if(user.getId() !=null){
+                 f =  FollowedPosts.builder().postId(postId).build();
+            }
+        }
+        if(f == null){
+            throw  new RuntimeException("followedPosts is null");
+        }else{
+            user.getFollowedPosts().add(f);
+            return followPostRepository.save(f);
+
+        }
     }
 
     @Transactional

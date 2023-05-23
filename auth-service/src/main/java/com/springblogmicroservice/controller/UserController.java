@@ -61,7 +61,7 @@ public class UserController {
 
 
 
-    @GetMapping("/getuserid")
+    @GetMapping("auth/getuserid")
     public ResponseEntity<?> getUserId(@RequestHeader (name="Authorization") String token){
         String email = "";
         System.out.println("token : "+ token);
@@ -69,6 +69,16 @@ public class UserController {
             email  =  jwtUtils.extractUsername(token.substring(7));
             Long userId = userRepository.findUserByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Not found user!")).getId();
             return ResponseEntity.ok(userId);
+        }else{
+            return ResponseEntity.ok("Bad Request!");
+        }
+    }
+
+    @GetMapping("auth/getusermail")
+    public ResponseEntity<?> getUserMail(@RequestParam (name="user-id") Long userId){
+        if(userId!=null){
+            User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("Not found user!"));
+            return ResponseEntity.ok(user.getEmail());
         }else{
             return ResponseEntity.ok("Bad Request!");
         }

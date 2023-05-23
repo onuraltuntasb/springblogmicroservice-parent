@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
 
         try {
             userId = webClient.get()
-                    .uri("http://localhost:8082/api/getuserid")
+                    .uri("http://localhost:8082/api/auth/getuserid")
                     .header(HttpHeaders.AUTHORIZATION, token)
                     .retrieve()
                     .bodyToMono(Long.class).block();

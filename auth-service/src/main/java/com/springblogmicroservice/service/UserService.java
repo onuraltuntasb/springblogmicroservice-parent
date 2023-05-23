@@ -17,7 +17,7 @@ public interface UserService {
 //    User updateUser(User user,Long userId);
 //    void deleteUser(Long userId);
 
-    FollowedPosts saveFollowPost(FollowedPosts followedPosts);
+    FollowedPosts saveFollowPost(Long postId,String token);
 
     NotificationSettings saveNotificationSettings(NotificationSettings notificationSettings,String token);
 
