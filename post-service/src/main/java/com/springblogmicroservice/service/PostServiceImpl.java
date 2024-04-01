@@ -30,7 +30,6 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post savePost(PostRequest postRequest,String token) {
 
-        //TODO transactional seems working ok
 
         List<PostListIdRequest> requestPostIds = postRequest.getTags();
         HashMap<Long,Long> map1 = new HashMap<>();
